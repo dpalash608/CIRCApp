@@ -1,0 +1,9 @@
+---
+applications:
+  - name: circdemo-srv
+    path: .
+    memory: 256M
+    buildpacks:
+      - nodejs_buildpack
+    services:
+      - circdemo-db

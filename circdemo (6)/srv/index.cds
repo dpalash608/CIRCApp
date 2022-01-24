@@ -1,0 +1,9 @@
+using from './cds/newreglist';
+using from './cds/newregobject';
+using from './cds/annotations/regreason';
+using from './cds/annotations/assetsec';
+using from './cds/annotations/subsector';
+using from './cds/annotations/capacity';
+using from './cds/annotations/enttype';
+using from './cds/annotations/intasset';
+using from './cds/annotations/status';

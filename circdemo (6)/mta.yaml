@@ -1,0 +1,135 @@
+_schema-version: "3.1"
+ID: circdemo
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: circdemo-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: circdemo-db
+  - name: circdemo-uaa
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+- name: circdemo-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: circdemo-db
+  - name: circdemo-uaa
+  parameters:
+    buildpack: nodejs_buildpack
+- name: circdemo-destinations
+  type: com.sap.application.content
+  requires:
+  - name: circdemo-uaa
+    parameters:
+      service-key:
+        name: circdemo-uaa-key
+  - name: circdemo-html5-repo-host
+    parameters:
+      service-key:
+        name: circdemo-html5-repo-host-key
+  - name: srv-api
+  - name: circdemo-destination
+    parameters:
+      content-target: true
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Authentication: OAuth2UserTokenExchange
+          Name: circdemo-app-srv
+          TokenServiceInstanceName: circdemo-uaa
+          TokenServiceKeyName: circdemo-uaa-key
+          URL: ~{srv-api/srv-url}
+          sap.cloud.service: circdemo.service
+        - Name: circdemo-html5-repo-host
+          ServiceInstanceName: circdemo-html5-repo-host
+          ServiceKeyName: circdemo-html5-repo-host-key
+          sap.cloud.service: circdemo.service
+        - Authentication: OAuth2UserTokenExchange
+          Name: circdemo-uaa
+          ServiceInstanceName: circdemo-uaa
+          ServiceKeyName: circdemo-uaa-key
+          sap.cloud.service: circdemo.service
+        existing_destinations_policy: update
+  build-parameters:
+    no-source: true
+- name: circdemo-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: circdemo-html5-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - newregdemo.zip
+      name: newregdemo
+      target-path: resources/
+- name: newregdemo
+  type: html5
+  path: app/newreg
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: circdemo-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+  properties:
+    hdi-service-name: ${service-name}
+- name: circdemo-uaa
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      tenant-mode: dedicated
+      xsappname: circdemo-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+- name: circdemo-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-plan: lite
+- name: circdemo-html5-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm install --production
+    - npx -p @sap/cds-dk cds build --production
+    - npx rimraf gen/db/src/gen/data

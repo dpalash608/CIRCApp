@@ -1,0 +1,7 @@
+###To check the functionality of document upload
+POST http://localhost:4004/browse/uploadContactDoc
+Content-Type: application/json
+
+{
+    "empname" : "Steve Young", "empurl" : "www.google.com"
+}
