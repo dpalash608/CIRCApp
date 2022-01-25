@@ -1,0 +1,17 @@
+_schema-version: "3.2"
+ID: circworkflow
+version: 0.0.1
+modules:
+- name: approvals
+  type: com.sap.application.content
+  path: approvals
+  requires:
+  - name: wm_workflow_circ
+    parameters:
+      content-target: true
+resources:
+- name: wm_workflow_circ
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: workflow
+    service-plan: standard

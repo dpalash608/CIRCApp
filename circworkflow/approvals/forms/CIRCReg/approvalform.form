@@ -1,0 +1,121 @@
+{
+    "id": "approvalform",
+    "schemaVersion": "1.1.0",
+    "name": "approvalform",
+    "revision": "1.0",
+    "type": "task",
+    "readOnly": false,
+    "content": [
+        {
+            "id": "first_name",
+            "type": "string",
+            "label": "First Name",
+            "readOnly": true,
+            "value": "${context.circData.fname}",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "id": "last_name",
+            "type": "string",
+            "label": "Last Name",
+            "readOnly": true,
+            "value": "${context.circData.lname}",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "id": "asset_name",
+            "type": "string",
+            "label": "Asset Name",
+            "readOnly": true,
+            "value": "${context.circData.assetName}",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "id": "asset_document",
+            "type": "string",
+            "label": "Asset Document",
+            "readOnly": true,
+            "value": "${context.circData.assetDoc}",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "id": "entity_name",
+            "type": "string",
+            "label": "Entity Name",
+            "readOnly": true,
+            "value": "${context.circData.entityName}",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "id": "entity_document",
+            "type": "string",
+            "label": "Entity Document",
+            "readOnly": true,
+            "value": "${context.circData.eDoc}",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "id": "my_proof",
+            "type": "string",
+            "label": "My Proof",
+            "readOnly": true,
+            "value": "${context.circData.myDoc}",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "id": "proofs_submitted",
+            "type": "string",
+            "label": "Proofs Submitted",
+            "readOnly": false,
+            "value": "${context.circData.proof}",
+            "control": {
+                "type": "RadioButtons",
+                "properties": {
+                    "items": [
+                        {
+                            "value": "Yes",
+                            "displayValue": "Yes"
+                        },
+                        {
+                            "value": "No",
+                            "displayValue": "No"
+                        }
+                    ]
+                }
+            },
+            "constraints": {
+                "required": true,
+                "enum": [
+                    "Yes",
+                    "No"
+                ]
+            }
+        }
+    ],
+    "decisions": [
+        {
+            "id": "approve",
+            "text": "Approve",
+            "decisionType": "positive"
+        },
+        {
+            "id": "decline",
+            "text": "Decline",
+            "decisionType": "negative"
+        }
+    ]
+}
